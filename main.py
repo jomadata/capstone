@@ -170,39 +170,49 @@ def us_only(j):
     if not df.loc[j, 'state'] in states:
         df.drop(j, inplace=True)
 
-
-def choose_city_state(city, state):
-    #Limiting the dataset to single city as the whole dataset is too large
-    print('Choosing city and state')
-    df_final = pd.read_csv('./final_reviews.csv')
-    df_business = pd.read_csv('./restaurants.csv')
-    df_city_bus = df_business[(df_business['city'] == city) & (df_business['state'] == state)].copy()
-    df_city_rev = df_final[(df_final['city']==city)&(df_final['state']==state)].copy()
-    df_city_bus.to_csv('./city_restaurants.csv', index=False)
-    df_city_rev.to_csv('./city_reviews.csv', index=False)
-    print('Choosing city and state complete')
+# in case there is a need to work on one city
+# def choose_city_state(city, state):
+#     #Limiting the dataset to single city as the whole dataset is too large
+#     print('Choosing city and state')
+#     df_final = pd.read_csv('./final_reviews.csv')
+#     df_business = pd.read_csv('./restaurants.csv')
+#     df_city_bus = df_business[(df_business['city'] == city) & (df_business['state'] == state)].copy()
+#     df_city_rev = df_final[(df_final['city']==city)&(df_final['state']==state)].copy()
+#     df_city_bus.to_csv('./city_restaurants.csv', index=False)
+#     df_city_rev.to_csv('./city_reviews.csv', index=False)
+#     print('Choosing city and state complete')
 
 
 def model_token_lemm():
     #tokenizing and lemmatizing the reviews text data
     print('Loading data')
-    df_final = pd.read_csv('./city_reviews.csv')
-    df_business = pd.read_csv('./city_restaurants.csv')
+    
+    # Code for standalone city processing
+    # df_final = pd.read_csv('./city_reviews.csv')
+    # df_business = pd.read_csv('./city_restaurants.csv')
+
+    # General process code
+    df_final = pd.read_csv('./final_reviews.csv')
+    df_business = pd.read_csv('./restaurants.csv')
 
     r_tokenizer = RegexpTokenizer(r'\b[a-zA-Z]{3,}\b')
     lemmatizer = WordNetLemmatizer()
+    
     df_business['tokens'] = ['nothing' for _ in range(df_business.shape[0])]
     print('Starting tokenization and lemmatizing')
     counter = 1
+    
     for business in df_business['business_id']:
         bus_tokens = []
         text = df_final[df_final['business_id']==business]['text']
         bus_tokens = []
+        
         for t in text:
             tokens = r_tokenizer.tokenize(t)
             for word in tokens:
                 if not word in stopwords.words('english'):
                     bus_tokens.append(word.lower())
+        
         bus_lemmas = [lemmatizer.lemmatize(word) for word in bus_tokens]
         bus_lemmas = ' '.join(bus_lemmas)
         the_index = df_business[df_business['business_id'] == business].index
@@ -324,8 +334,8 @@ def model_bert_summary():
     print('Loading the model')
     model = Summarizer()
     print('Loading datasets')
-    df_bert = pd.read_csv('./city_reviews.csv')
-    df_bus = pd.read_csv('./city_restaurants.csv')
+    df_bert = pd.read_csv('./final_reviews.csv')
+    df_bus = pd.read_csv('./restaurants.csv')
     print('creating average reviews')
     counter = 1
     df_bert['avg_review'] = ['Not yet generated' for i in range(df_bert.shape[0])]
