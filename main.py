@@ -166,6 +166,7 @@ def lang_clear():
 
 
 def us_only(j):
+    #leaving only US states and cities
     if not df.loc[j, 'state'] in states:
         df.drop(j, inplace=True)
 
@@ -183,6 +184,7 @@ def choose_city_state(city, state):
 
 
 def model_token_lemm():
+    #tokenizing and lemmatizing the reviews text data
     print('Loading data')
     df_final = pd.read_csv('./city_reviews.csv')
     df_business = pd.read_csv('./city_restaurants.csv')
@@ -211,6 +213,7 @@ def model_token_lemm():
 
 
 def dimensions():
+    #Loading dimensions from the csv file and evaluating the lemmatized text
     print('Loading data set')
     df_restaurants = pd.read_csv('./city_restaurants.csv')
     print('Loading dimensions for food quality, service speed, service quality and atmosphere') 
@@ -292,6 +295,7 @@ def dimensions():
     df_restaurants['service_speed_index'] = 3 + df_restaurants['service_speed_index'] * 2 
     df_restaurants['service_quality_index'] = 3 + df_restaurants['service_quality_index'] * 2 
     df_restaurants['atmosphere_index'] = 3 + df_restaurants['atmosphere_index'] * 2 
+    
     #making the rounding to the nearest .5
     def rounding(num):
         whole = num // 1
@@ -315,7 +319,8 @@ def dimensions():
 
 
 
-def model_bert_summary(): #text summarization
+def model_bert_summary():
+    #text summarization
     print('Loading the model')
     model = Summarizer()
     print('Loading datasets')
